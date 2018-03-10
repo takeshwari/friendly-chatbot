@@ -1,2 +1,5 @@
 # friendly-chat-bot
-This is a friendly artificial intelligent chatbot. :simple_smile:
+## Anti-bullying Chatbot
+
+This is a friendly artificially intelligent chatbot. 
+:simple_smile:
