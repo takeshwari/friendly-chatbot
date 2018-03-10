@@ -6,9 +6,9 @@ This is a friendly artificially intelligent chatbot. It is designed to assist ch
 
 Currently, I am trying to implement the following functionality: 
   1. Detect negative statements against someone
-    - chatbot will trigger a response 
+     - chatbot will trigger a response 
   2. Detect negative sentiment towards oneself (i.e. self-harm)
-    - chatbot will guide them to suicide helpline 
+     - chatbot will guide them to suicide helpline 
   3. Ask student about hobbies, interests
      - create a list of suggested activities to do
         - ex: list of books, games, movies 
