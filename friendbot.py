@@ -43,9 +43,21 @@ class friendlybot:
         training = nice +not_nice
         self.classifier = NaiveBayesClassifier.train(training)
 
-    def generate_positive_comments(self):
-        comments_list =[]
-        return comments_list
+    def generate_positive_comments(self, sentence):
+        nice = []
+        for word in self.words:
+            s = TextBlob(word)
+            if s.sentiment.polarity < -0.1:
+                ant_list = self.antonyms(word)
+                for i in ant_list:
+                    s2 = TextBlob(i)
+                    if s2.sentiment.polarity > 0.1:
+                        nice.append(i)
+                        break
+            else:
+                nice.append(word)
+
+        return ' '.join(nice)
 
     def formatsent(self, sentence):
         return ({word: True for word in word_tokenize(sentence)})
@@ -93,10 +105,15 @@ if __name__ == '__main__':
 
     saying = input()
     chatbot = friendlybot(saying)
-    print(chatbot.generate_random_response())
-    print(chatbot.antonyms("happy"))
-    chatbot.build_model()
-    print(chatbot.classify_comment("I will kill you"))
+    print(chatbot.generate_positive_comments(saying))
+   # print(chatbot.generate_random_response())
+    #print(chatbot.antonyms("happy"))
+    #chatbot.build_model()
+    #print(chatbot.classify_comment("I will kill you"))
+    #test = TextBlob("kill")
+    #print(test.sentiment.polarity)
+
+
 
 
 

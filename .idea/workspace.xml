@@ -1,9 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project version="4">
   <component name="ChangeListManager">
-    <list default="true" id="cb5d4c75-cd26-48b3-add7-8c1c9ac6af0c" name="Default" comment="">
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/friendbot.py" afterPath="$PROJECT_DIR$/friendbot.py" />
-    </list>
+    <list default="true" id="cb5d4c75-cd26-48b3-add7-8c1c9ac6af0c" name="Default" comment="" />
     <option name="EXCLUDED_CONVERTED_TO_IGNORED" value="true" />
     <option name="TRACKING_ENABLED" value="true" />
     <option name="SHOW_DIALOG" value="false" />
