@@ -1,0 +1,8 @@
+requests
+tweepy
+textblob
+pytest
+nltk
+essential_generators
+sklearn
+re
