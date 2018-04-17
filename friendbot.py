@@ -9,6 +9,10 @@ from textblob import TextBlob
 from nltk.corpus import wordnet
 from nltk.classify import NaiveBayesClassifier
 from nltk.corpus import stopwords
+from chatterbot import ChatBot
+from chatterbot.trainers import ChatterBotCorpusTrainer
+
+
 #nltk.download('stopwords')
 import re
 from nltk.classify.util import accuracy
@@ -26,6 +30,7 @@ class friendlybot:
     user_string = ""
     words = []
     classifier = None
+    bot = None
 
     def feat(self, words):
         stopset = list(set(stopwords.words('english')))
@@ -36,7 +41,7 @@ class friendlybot:
         with open("data/pos_tweets.txt") as f:
             nice_list = list(f)
 
-        with open("data/commets.txt") as f:
+        with open("data/neg_comments.txt") as f:
             not_nice_list = list(f)
 
         nice = [(self.feat(f), 'positive') for f in nice_list]
@@ -86,6 +91,7 @@ class friendlybot:
         return antonyms
     def __init__(self):
         self.build_model()
+        self.chat_bot()
 
     def sentiment(self, sentence):
         pos = []
@@ -99,15 +105,24 @@ class friendlybot:
     def classify_comment(self, sentence):
         return self.classifier.classify(self.feat(sentence))
 
+    def chat_bot(self):
+        self.bot = ChatBot("Chatterbot", storage_adapter="chatterbot.storage.SQLStorageAdapter")
+        self.bot.set_trainer(ChatterBotCorpusTrainer)
+        self.bot.train("chatterbot.corpus.english")
+
     def get_response(self, user_string):
         if "post this" in user_string.lower():
 
             user_string=re.findall(r'"([^"]*)"', user_string)
             self.words, self.user_string = self.data_cleaning(user_string[0])
             if(self.classify_comment(self.user_string)== 'negative'):
-                return self.NEGATIVE_RESPONE + self.generate_positive_comments()
+                return self.NEGATIVE_RESPONE + self.generate_positive_comments() + "or a constructive response" + self.constructive_response()
             else:
                  return self.POSITIVE_RESPONSES
+
+        else:
+            return str(self.bot.get_response(user_string))
+
 
 
 
@@ -123,10 +138,3 @@ if __name__ == '__main__':
     #print(chatbot.classify_comment("I will kill you"))
     #test = TextBlob("kill")
     #print(test.sentiment.polarity)
-
-
-
-
-
-
-
