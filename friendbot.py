@@ -17,30 +17,68 @@ from chatterbot.trainers import ChatterBotCorpusTrainer
 import re
 from nltk.classify.util import accuracy
 
-
-
-
 ##MarkovTextGenerator
 from essential_generators import *
 
 
+##implementation of a friendly bot
 class friendlybot:
+
     POSITIVE_RESPONSES = "That sounds good, you should post it"
-    NEGATIVE_RESPONE = "Are you sure you want to post that? Try posting instead: "
+    NEGATIVE_RESPONE = " Are you sure you want to post that? "
     user_string = ""
     words = []
     classifier = None
     bot = None
+    noun, verb, adjective = None, None, None
 
+    #build naive_bayees classifier model and chat_bot
+    def __init__(self):
+        self.build_model()
+        self.chat_bot()
+
+    ##split user's sentence into part of speech
+    def find_pos(self):
+        text=TextBlob(self.user_string)
+        for word, tag in text.pos_tags:
+            if tag == 'NN':  # This is a noun
+                self.noun = word
+            elif tag == 'JJ':
+                self.adjective = word
+            elif tag.startswith('VB'):
+                self.verb = word
+
+    #construct a response to counteract the negative response
+    def constructive_response(self):
+        self.find_pos()
+        noun, verb, adjective = self.noun, self.verb, self.adjective
+        noun, verb, adjective = self.noun, self.verb, self.adjective
+        if noun:
+            if (TextBlob(noun).sentiment.polarity < -0.1):
+                return "why is there {} why not there is no {}?".format(noun, self.antonyms(noun).pop(0))
+
+        if verb:
+            if (TextBlob(verb).sentiment.polarity < -0.1):
+                return "why do you want to {} you should instead {}".format(verb, self.antonyms(verb).pop(0))
+
+        if adjective:
+            if (TextBlob(adjective).sentiment.polarity < -0.1):
+                return "why {} ? why not {}?".format(adjective, self.antonyms(adjective).pop(0))
+        else:
+            return self.NEGATIVE_RESPONE
+
+    #split words into tokens
     def feat(self, words):
         stopset = list(set(stopwords.words('english')))
         return dict([(word, True) for word in words.split() if word not in stopset])
 
+    # build classification model
     def build_model(self):
 
         with open("data/pos_tweets.txt") as f:
             nice_list = list(f)
 
+        #open negative comment data from Kaggle:
         with open("data/neg_comments.txt") as f:
             not_nice_list = list(f)
 
@@ -48,6 +86,7 @@ class friendlybot:
         not_nice = [(self.feat(f), 'negative') for f in not_nice_list]
         training = nice +not_nice
         self.classifier = NaiveBayesClassifier.train(training)
+
 
     def generate_positive_comments(self):
         nice = []
@@ -89,9 +128,7 @@ class friendlybot:
                 if a.antonyms():
                     antonyms.append(a.antonyms()[0].name())
         return antonyms
-    def __init__(self):
-        self.build_model()
-        self.chat_bot()
+
 
     def sentiment(self, sentence):
         pos = []
@@ -116,7 +153,7 @@ class friendlybot:
             user_string=re.findall(r'"([^"]*)"', user_string)
             self.words, self.user_string = self.data_cleaning(user_string[0])
             if(self.classify_comment(self.user_string)== 'negative'):
-                return self.NEGATIVE_RESPONE + self.generate_positive_comments() + "or a constructive response" + self.constructive_response()
+                return  self.constructive_response()
             else:
                  return self.POSITIVE_RESPONSES
 
@@ -128,9 +165,10 @@ class friendlybot:
 
 if __name__ == '__main__':
 
-    saying = input()
-    chatbot = friendlybot()
-    print(chatbot.get_response(saying))
+    while True:
+        saying = input()
+        chatbot = friendlybot()
+        print(chatbot.get_response(saying))
 
    # print(chatbot.generate_random_response())
     #print(chatbot.antonyms("happy"))
