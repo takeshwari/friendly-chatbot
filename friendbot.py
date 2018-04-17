@@ -11,7 +11,6 @@ from nltk.classify import NaiveBayesClassifier
 from nltk.corpus import stopwords
 #nltk.download('stopwords')
 import re
-
 from nltk.classify.util import accuracy
 
 
@@ -22,6 +21,8 @@ from essential_generators import *
 
 
 class friendlybot:
+    POSITIVE_RESPONSES = "That sounds good, you should post it"
+    NEGATIVE_RESPONE = "Are you sure you want to post that? Try posting instead: "
     user_string = ""
     words = []
     classifier = None
@@ -43,7 +44,7 @@ class friendlybot:
         training = nice +not_nice
         self.classifier = NaiveBayesClassifier.train(training)
 
-    def generate_positive_comments(self, sentence):
+    def generate_positive_comments(self):
         nice = []
         for word in self.words:
             s = TextBlob(word)
@@ -61,9 +62,6 @@ class friendlybot:
 
     def formatsent(self, sentence):
         return ({word: True for word in word_tokenize(sentence)})
-
-    def __init__(self, user_string):
-        self.words, self.user_string = self.data_cleaning(user_string)
 
     def data_cleaning(self, sentence):
         cleaned = []
@@ -86,6 +84,8 @@ class friendlybot:
                 if a.antonyms():
                     antonyms.append(a.antonyms()[0].name())
         return antonyms
+    def __init__(self):
+        self.build_model()
 
     def sentiment(self, sentence):
         pos = []
@@ -99,13 +99,24 @@ class friendlybot:
     def classify_comment(self, sentence):
         return self.classifier.classify(self.feat(sentence))
 
+    def get_response(self, user_string):
+        if "post this" in user_string.lower():
+
+            user_string=re.findall(r'"([^"]*)"', user_string)
+            self.words, self.user_string = self.data_cleaning(user_string[0])
+            if(self.classify_comment(self.user_string)== 'negative'):
+                return self.NEGATIVE_RESPONE + self.generate_positive_comments()
+            else:
+                 return self.POSITIVE_RESPONSES
+
 
 
 if __name__ == '__main__':
 
     saying = input()
-    chatbot = friendlybot(saying)
-    print(chatbot.generate_positive_comments(saying))
+    chatbot = friendlybot()
+    print(chatbot.get_response(saying))
+
    # print(chatbot.generate_random_response())
     #print(chatbot.antonyms("happy"))
     #chatbot.build_model()
