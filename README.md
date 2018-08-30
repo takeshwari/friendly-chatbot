@@ -12,7 +12,6 @@ Currently, I am trying to implement the following functionality:
   3. Ask student about hobbies, interests
      - create a list of suggested activities to do
         - ex: list of books, games, movies 
-   
-   demo video: [https://www.youtube.com/watch?v=15KYtUGdr-M]
+  
    
   
